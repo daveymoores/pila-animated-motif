@@ -1,43 +1,86 @@
+:root {
+  --base: 50px;
+  --white: #ffffff;
+  --royalBlue: #2E32DB;
+  --royalBlueDarkTint: #292DC3;
+  --green: #58C6AA;
+}
+
+body {
+  background-color: var(--royalBlue);
+}
+
 .container {
   position: relative;
   display: flex;
   justify-content: center;
-  width: 200px;
-  height: 200px;
+  align-items: center;
+  width: calc(4 * var(--base));
+  height: calc(4 * var(--base));
   cursor: pointer;
 }
 
+.container.green .pole {
+  background-color: var(--green);
+  z-index: 1;
+}
+
+.motif_wrapper {
+  width: 1600px;
+  height: 1600px;
+  display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 10%);
+  opacity: 0.8;
+}
+
+.motif_wrapper__overlay {
+  height: 600px;
+  width: 600px;
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, 50%);
+  z-index: 2;
+  opacity: 1;
+}
+
+.pole_wrapper {
+  position: relative;
+  width: calc(2 * var(--base));
+  height: calc(2 * var(--base));
+  display: flex;
+  justify-content: center;
+}
+
 .pole {
-  background-color: white;
-  height: 200px;
-  width: 50px;
-  border-radius: 50px;
+  background-color: var(--royalBlueDarkTint);
+  height: calc(2 * var(--base));
+  width: calc(0.5 * var(--base));
+  border-radius: calc(0.5 * var(--base));
   position: absolute;
 }
 
 .pole2 {
-  background-color: white;
-  height: 50px;
-  width: 200px;
-  border-radius: 50px;
-  position: absolute;
+  height: calc(0.5 * var(--base));
+  width: calc(2 * var(--base));
 }
 
 .pole2-container {
-  left: -75px;
+  left: calc(-0.75 * var(--base));
   position: absolute;
 }
 
 .pole3 {
-  background-color: white;
-  width: 50px;
-  height: 200px;
-  border-radius: 50px;
-  position: absolute;
+  width: calc(0.5 * var(--base));
+  height: calc(2 * var(--base));
 }
 
 .pole3-container {
-  left: -75px;
-  top: -150px;
+  left: calc(-0.75 * var(--base));
+  top: calc(-1.5 * var(--base));
   position: absolute;
 }

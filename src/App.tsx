@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  motion,
-  useCycle,
-  AnimateSharedLayout,
-  useMotionValue,
-} from "framer-motion";
+import { motion, useCycle } from "framer-motion";
 import "./App.css";
 
 interface PoleProps {
@@ -13,12 +8,11 @@ interface PoleProps {
   parentIndex: number;
 }
 
-const COLOR_MODE = false;
+interface MotifProps {
+  className?: string;
+}
 
 const items = [0, 1];
-const colors = COLOR_MODE
-  ? ["pink", "hotpink", "blue", "orange"]
-  : ["white", "white", "white", "white"];
 
 const animationSequences = [
   [
@@ -78,7 +72,7 @@ const Pole3 = ({ index, parentIndex }: PoleProps) => {
       style={{ opacity: parentIndex >= 4 && parentIndex <= 5 ? 1 : 0 }}
     >
       <motion.div
-        className={"pole3"}
+        className={"pole pole3"}
         animate={animate}
         transition={{
           duration: 0.4,
@@ -102,7 +96,7 @@ const Pole2 = ({ index, parentIndex, style }: PoleProps) => {
       style={{ opacity: parentIndex >= 2 ? 1 : 0 }}
     >
       <motion.div
-        className={"pole2"}
+        className={"pole pole2"}
         animate={animate}
         transition={{
           duration: 0.4,
@@ -133,35 +127,52 @@ const Pole = ({ index, parentIndex }: PoleProps) => {
   );
 };
 
-const App = () => {
-  const x = useMotionValue(0);
-  const [parentIndex, setParentIndex] = React.useState(0);
+const getRandomInt = (max: number) => {
+  return Math.floor(Math.random() * Math.floor(max));
+};
+
+const Motif = ({ className }: MotifProps) => {
+  const sequenceLength = animationSequences[0].length;
+
+  const [parentIndex, setParentIndex] = React.useState(getRandomInt(0));
 
   const onInteractionHandler = React.useCallback(
     () =>
       setParentIndex((index) =>
-        index + 1 > animationSequences[0].length - 1 ? 0 : index + 1
+        index + 1 > sequenceLength - 1 ? 0 : index + 1
       ),
     []
   );
 
-  const velocity = x.getVelocity();
-  console.log(velocity);
+  return (
+    <motion.div
+      className={`container ${className}`}
+      onMouseEnter={onInteractionHandler}
+    >
+      <div className={"pole_wrapper"}>
+        {items.map((item) => (
+          <Pole key={item} parentIndex={parentIndex} index={item} />
+        ))}
+        <Pole2 parentIndex={parentIndex} index={0} />
+        <Pole3 parentIndex={parentIndex} index={0} />
+      </div>
+    </motion.div>
+  );
+};
+
+const App = () => {
   return (
     <div className="App">
-      <motion.div
-        className={"container"}
-        onMouseEnter={onInteractionHandler}
-        onMouseLeave={onInteractionHandler}
-      >
-        <AnimateSharedLayout>
-          {items.map((item) => (
-            <Pole key={item} parentIndex={parentIndex} index={item} />
-          ))}
-          <Pole2 style={x} parentIndex={parentIndex} index={0} />
-          <Pole3 parentIndex={parentIndex} index={0} />
-        </AnimateSharedLayout>
-      </motion.div>
+      <div className={"motif_wrapper motif_wrapper__overlay"}>
+        {[...Array(9)].map(() => {
+          return <Motif className={"green"} />;
+        })}
+      </div>
+      <div className={"motif_wrapper"}>
+        {[...Array(80)].map(() => {
+          return <Motif />;
+        })}
+      </div>
     </div>
   );
 };
