@@ -1,12 +1,18 @@
-import React from "react";
-import { motion, useCycle } from "framer-motion";
+import React, { SyntheticEvent } from "react";
+import { motion } from "framer-motion";
 import "./App.css";
+import animationSequences from "./animation-sequences/square/square";
+import { Pole1, Pole2, Pole3 } from "./pole";
+import getRandomInt from "./helpers/getRandomInt";
+import forwardTriangleSequence from "./animation-sequences/triangle/forward";
+import reverseTriangleSequence from "./animation-sequences/triangle/reverse";
+import squareSequence from "./animation-sequences/square/square";
 
-interface PoleProps {
-  index: number;
-  style?: any;
-  parentIndex: number;
-}
+const sequences = [
+  squareSequence,
+  forwardTriangleSequence,
+  reverseTriangleSequence,
+];
 
 interface MotifProps {
   className?: string;
@@ -14,147 +20,75 @@ interface MotifProps {
 
 const items = [0, 1];
 
-const animationSequences = [
-  [
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: 90, originY: 0.125, originX: 0.5 },
-    { rotate: 90, originY: 0.125, originX: 0.5 },
-    { rotate: 90, originY: 0.125, originX: 0.5 },
-    { rotate: 90, originY: 0.125, originX: 0.5 },
-    { rotate: 90, originY: 0.125, originX: 0.5 },
-    { rotate: 90, originY: 0.125, originX: 0.5 },
-  ],
-  [
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: 180, originY: 0.125, originX: 0.5 },
-    { rotate: 180, originY: 0.125, originX: 0.5 },
-    { rotate: 180, originY: 0.125, originX: 0.5 },
-    { rotate: 180, originY: 0.125, originX: 0.5 },
-    { rotate: 180, originY: 0.125, originX: 0.5 },
-    { rotate: 180, originY: 0.125, originX: 0.5 },
-  ],
-];
-
-const animationSequences2 = [
-  [
-    { rotate: 0, originY: 0.5, originX: 0.125 },
-    { rotate: 0, originY: 0.5, originX: 0.125 },
-    { rotate: 90, originY: 0.5, originX: 0.125 },
-    { rotate: -90, originY: 0.5, originX: 0.125 },
-    { rotate: -90, originY: 0.5, originX: 0.125 },
-    { rotate: -90, originY: 0.5, originX: 0.125 },
-    { rotate: 0, originY: 0.5, originX: 0.125 },
-  ],
-];
-
-const animationSequences3 = [
-  [
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: -90, originY: 0.125, originX: 0.5 },
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-    { rotate: 0, originY: 0.125, originX: 0.5 },
-  ],
-];
-
-const Pole3 = ({ index, parentIndex }: PoleProps) => {
-  const [animate, cycle] = useCycle(...animationSequences3[index]);
-
-  React.useEffect(() => {
-    cycle(parentIndex);
-  }, [parentIndex, cycle]);
-
-  return (
-    <div
-      className={"pole3-container"}
-      style={{ opacity: parentIndex >= 4 && parentIndex <= 5 ? 1 : 0 }}
-    >
-      <motion.div
-        className={"pole pole3"}
-        animate={animate}
-        transition={{
-          duration: 0.4,
-          ease: "easeInOut",
-        }}
-      />
-    </div>
-  );
-};
-
-const Pole2 = ({ index, parentIndex, style }: PoleProps) => {
-  const [animate, cycle] = useCycle(...animationSequences2[index]);
-
-  React.useEffect(() => {
-    cycle(parentIndex);
-  }, [parentIndex, cycle]);
-
-  return (
-    <div
-      className={"pole2-container"}
-      style={{ opacity: parentIndex >= 2 ? 1 : 0 }}
-    >
-      <motion.div
-        className={"pole pole2"}
-        animate={animate}
-        transition={{
-          duration: 0.4,
-          ease: "easeInOut",
-        }}
-        style={style}
-      />
-    </div>
-  );
-};
-
-const Pole = ({ index, parentIndex }: PoleProps) => {
-  const [animate, cycle] = useCycle(...animationSequences[index]);
-
-  React.useEffect(() => {
-    cycle(parentIndex);
-  }, [parentIndex, cycle]);
-
-  return (
-    <motion.div
-      className={"pole"}
-      animate={animate}
-      transition={{
-        duration: 0.4,
-        ease: "easeInOut",
-      }}
-    />
-  );
-};
-
-const getRandomInt = (max: number) => {
-  return Math.floor(Math.random() * Math.floor(max));
-};
-
-const Motif = ({ className }: MotifProps) => {
-  const sequenceLength = animationSequences[0].length;
-
+const Square = ({ className }: MotifProps) => {
+  const sequenceLength = animationSequences.sequence1[0].length;
   const [parentIndex, setParentIndex] = React.useState(getRandomInt(0));
+  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [mouseEvent, setMouseEvent] = React.useState<SyntheticEvent["type"]>();
+  const [sequenceInt, setSequenceInt] = React.useState<any>(sequences[0]);
+  const [sequence, setSequence] = React.useState<any>(sequences[0]);
+
+  React.useEffect(() => {
+    if (!parentIndex) {
+      const randomInt = getRandomInt(3);
+      setSequenceInt(randomInt);
+      setSequence(sequences[randomInt]);
+    }
+  }, [parentIndex]);
 
   const onInteractionHandler = React.useCallback(
-    () =>
-      setParentIndex((index) =>
-        index + 1 > sequenceLength - 1 ? 0 : index + 1
-      ),
-    []
+    (event: SyntheticEvent) => {
+      setMouseEvent(event.type);
+      setIsAnimating(!isAnimating);
+    },
+    [isAnimating]
   );
+
+  React.useEffect(() => {
+    let timerId: NodeJS.Timeout | undefined = undefined;
+    if (isAnimating) {
+      if (mouseEvent === "mouseenter") {
+        setParentIndex((index) =>
+          index + 1 > sequenceLength - 1 ? 0 : index + 1
+        );
+      }
+      timerId = setInterval(
+        () =>
+          setParentIndex((index) =>
+            index + 1 > sequenceLength - 1 ? 0 : index + 1
+          ),
+        400
+      );
+    } else {
+      clearInterval(timerId);
+    }
+
+    return () => {
+      if (timerId) clearInterval(timerId);
+    };
+  }, [isAnimating, sequenceLength, mouseEvent]);
 
   return (
     <motion.div
       className={`container ${className}`}
       onMouseEnter={onInteractionHandler}
+      onMouseLeave={onInteractionHandler}
     >
       <div className={"pole_wrapper"}>
         {items.map((item) => (
-          <Pole key={item} parentIndex={parentIndex} index={item} />
+          <Pole1
+            key={item}
+            sequence={sequence}
+            parentIndex={parentIndex}
+            index={item}
+          />
         ))}
-        <Pole2 parentIndex={parentIndex} index={0} />
-        <Pole3 parentIndex={parentIndex} index={0} />
+        {!sequenceInt && (
+          <Pole2 sequence={sequence} parentIndex={parentIndex} index={0} />
+        )}
+        {!sequenceInt && (
+          <Pole3 sequence={sequence} parentIndex={parentIndex} index={0} />
+        )}
       </div>
     </motion.div>
   );
@@ -165,12 +99,12 @@ const App = () => {
     <div className="App">
       <div className={"motif_wrapper motif_wrapper__overlay"}>
         {[...Array(9)].map(() => {
-          return <Motif className={"green"} />;
+          return <Square className={"green"} />;
         })}
       </div>
       <div className={"motif_wrapper"}>
         {[...Array(80)].map(() => {
-          return <Motif />;
+          return <Square />;
         })}
       </div>
     </div>

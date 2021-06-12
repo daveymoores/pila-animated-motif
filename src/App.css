@@ -26,8 +26,8 @@ body {
 }
 
 .motif_wrapper {
-  width: 1600px;
-  height: 1600px;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-wrap: wrap;
   position: absolute;
@@ -80,7 +80,7 @@ body {
 }
 
 .pole3-container {
-  left: calc(-0.75 * var(--base));
+  left: calc(0.75 * var(--base));
   top: calc(-1.5 * var(--base));
   position: absolute;
 }
